@@ -1,12 +1,12 @@
 //===----------------------------------------------------------------------===//
 //
-// This source file is part of the SwiftServiceBootstrap open source project
+// This source file is part of the SwiftServiceLifecycle open source project
 //
-// Copyright (c) 2019-2020 Apple Inc. and the SwiftServiceBootstrap project authors
+// Copyright (c) 2019-2020 Apple Inc. and the SwiftServiceLifecycle project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftServiceBootstrap project authors
+// See CONTRIBUTORS.txt for the list of SwiftServiceLifecycle project authors
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -148,7 +148,7 @@ extension ServiceLifecycle {
     /// - parameters:
     ///    - signal: The signal to trap.
     ///    - handler: closure to invoke when the signal is captured.
-    /// - returns: a `DispatchSourceSignal` for the given trap. The source must be cancled by the caller.
+    /// - returns: a `DispatchSourceSignal` for the given trap. The source must be cancelled by the caller.
     public static func trap(signal sig: Signal, handler: @escaping (Signal) -> Void, on queue: DispatchQueue = .global()) -> DispatchSourceSignal {
         let signalSource = DispatchSource.makeSignalSource(signal: sig.rawValue, queue: queue)
         signal(sig.rawValue, SIG_IGN)
@@ -518,24 +518,5 @@ public extension ComponentLifecycle {
     ///    - handler: `Handler` to perform the shutdown.
     func registerShutdown(label: String, _ handler: LifecycleHandler) {
         self.register(label: label, start: .none, shutdown: handler)
-    }
-
-    /// Adds a `Task` to a `Tasks` collection.
-    ///
-    /// - parameters:
-    ///    - label: label of the item, useful for debugging.
-    ///    - start: closure to perform the shutdown.
-    ///    - shutdown: closure to perform the shutdown.
-    func register(label: String, start: @escaping () throws -> Void, shutdown: @escaping () throws -> Void) {
-        self.register(label: label, start: .sync(start), shutdown: .sync(shutdown))
-    }
-
-    /// Adds a `Task` to a `Tasks` collection.
-    ///
-    /// - parameters:
-    ///    - label: label of the item, useful for debugging.
-    ///    - handler: closure to perform the shutdown.
-    func registerShutdown(label: String, _ handler: @escaping () throws -> Void) {
-        self.register(label: label, start: .none, shutdown: .sync(handler))
     }
 }
